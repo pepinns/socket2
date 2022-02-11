@@ -1090,6 +1090,15 @@ impl Socket {
         }
     }
 
+    /// Set IP_OPTIONS on this socket
+    #[cfg(any(doc, all(feature = "all", target_os = "linux")))]
+    #[cfg_attr(docsrs, doc(cfg(all(feature = "all", target_os = "linux"))))]
+    pub fn set_ip_options(&self, options: [u8; 40]) -> io::Result<()> {
+        // TODO: figure out how to allow variable sized options,
+        // setsockopt uses size_of, which requires the type to have a known size
+        unsafe { setsockopt(self.as_raw(), sys::IPPROTO_IP, libc::IP_OPTIONS, options) }
+    }
+
     /// Join a multicast group using `IP_ADD_MEMBERSHIP` option on this socket.
     ///
     /// This function specifies a new multicast group for this socket to join.
